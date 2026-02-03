@@ -207,6 +207,10 @@ export type AgentDefaultsConfig = {
     /** Default thinking level for spawned sub-agents (e.g. "off", "low", "medium", "high"). */
     thinking?: string;
   };
+  /** Per-agent session routing overrides. */
+  session?: {
+    channelScope?: "per-channel" | "shared";
+  };
   /** Optional sandbox settings for non-main sessions. */
   sandbox?: {
     /** Enable sandboxing for sessions. */

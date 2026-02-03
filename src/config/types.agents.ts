@@ -62,6 +62,9 @@ export type AgentConfig = {
     prune?: SandboxPruneSettings;
   };
   tools?: AgentToolsConfig;
+  session?: {
+    channelScope?: "per-channel" | "shared";
+  };
 };
 
 export type AgentsConfig = {

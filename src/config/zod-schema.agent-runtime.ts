@@ -420,6 +420,13 @@ export const AgentModelSchema = z.union([
     })
     .strict(),
 ]);
+export const AgentSessionSchema = z
+  .object({
+    channelScope: z.union([z.literal("per-channel"), z.literal("shared")]).optional(),
+  })
+  .strict()
+  .optional();
+
 export const AgentEntrySchema = z
   .object({
     id: z.string(),
@@ -454,6 +461,7 @@ export const AgentEntrySchema = z
       .optional(),
     sandbox: AgentSandboxSchema,
     tools: AgentToolsSchema,
+    session: AgentSessionSchema,
   })
   .strict();
 

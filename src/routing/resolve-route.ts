@@ -81,6 +81,8 @@ export function buildAgentSessionKey(params: {
   /** DM session scope. */
   dmScope?: "main" | "per-peer" | "per-channel-peer" | "per-account-channel-peer";
   identityLinks?: Record<string, string[]>;
+  /** Channel session scope: "shared" collapses all guild channels to one session. */
+  channelScope?: "per-channel" | "shared";
 }): string {
   const channel = normalizeToken(params.channel) || "unknown";
   const peer = params.peer;
@@ -93,6 +95,7 @@ export function buildAgentSessionKey(params: {
     peerId: peer ? normalizeId(peer.id) || "unknown" : null,
     dmScope: params.dmScope,
     identityLinks: params.identityLinks,
+    channelScope: params.channelScope,
   });
 }
 
@@ -186,6 +189,13 @@ export function resolveAgentRoute(input: ResolveAgentRouteInput): ResolvedAgentR
 
   const choose = (agentId: string, matchedBy: ResolvedAgentRoute["matchedBy"]) => {
     const resolvedAgentId = pickFirstExistingAgentId(input.cfg, agentId);
+    const agentEntry = listAgents(input.cfg).find(
+      (a) => normalizeAgentId(a.id) === resolvedAgentId,
+    );
+    const channelScope =
+      agentEntry?.session?.channelScope ??
+      input.cfg.agents?.defaults?.session?.channelScope ??
+      "per-channel";
     const sessionKey = buildAgentSessionKey({
       agentId: resolvedAgentId,
       channel,
@@ -193,6 +203,7 @@ export function resolveAgentRoute(input: ResolveAgentRouteInput): ResolvedAgentR
       peer,
       dmScope,
       identityLinks,
+      channelScope,
     }).toLowerCase();
     const mainSessionKey = buildAgentMainSessionKey({
       agentId: resolvedAgentId,

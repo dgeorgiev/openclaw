@@ -114,21 +114,6 @@ export function normalizeAccountId(value: string | undefined | null): string {
   );
 }
 
-// Shared session configuration - agents that use same session across all Discord channels
-const SHARED_DISCORD_SESSIONS: Record<string, string> = {
-  "maestro": "shared",
-  "main": "shared"
-};
-
-function getSharedDiscordPeerId(agentId: string, peerId: string): string {
-  const normalizedAgentId = agentId.toLowerCase().trim();
-  const sharedSuffix = SHARED_DISCORD_SESSIONS[normalizedAgentId];
-  if (sharedSuffix && peerId !== "unknown") {
-    return sharedSuffix;
-  }
-  return peerId;
-}
-
 export function buildAgentMainSessionKey(params: {
   agentId: string;
   mainKey?: string | undefined;
@@ -148,6 +133,9 @@ export function buildAgentPeerSessionKey(params: {
   identityLinks?: Record<string, string[]>;
   /** DM session scope. */
   dmScope?: "main" | "per-peer" | "per-channel-peer" | "per-account-channel-peer";
+  dmScope?: "main" | "per-peer" | "per-channel-peer" | "per-account-channel-peer";
+  /** Channel session scope: "shared" collapses all guild channels to one session. */
+  channelScope?: "per-channel" | "shared";
 }): string {
   const peerKind = params.peerKind ?? "dm";
   if (peerKind === "dm") {
@@ -185,7 +173,7 @@ export function buildAgentPeerSessionKey(params: {
   const channel = (params.channel ?? "").trim().toLowerCase() || "unknown";
   const peerId = ((params.peerId ?? "").trim() || "unknown").toLowerCase();
   const normalizedAgentId = normalizeAgentId(params.agentId);
-  const finalPeerId = getSharedDiscordPeerId(normalizedAgentId, peerId);
+  const finalPeerId = params.channelScope === "shared" ? "shared" : peerId;
   return `agent:${normalizedAgentId}:${channel}:${peerKind}:${finalPeerId}`;
 }
 

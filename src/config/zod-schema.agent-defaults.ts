@@ -1,5 +1,6 @@
 import { z } from "zod";
 import {
+  AgentSessionSchema,
   HeartbeatSchema,
   MemorySearchSchema,
   SandboxBrowserSchema,
@@ -168,6 +169,7 @@ export const AgentDefaultsSchema = z
       })
       .strict()
       .optional(),
+    session: AgentSessionSchema,
   })
   .strict()
   .optional();
