@@ -114,6 +114,21 @@ export function normalizeAccountId(value: string | undefined | null): string {
   );
 }
 
+// Shared session configuration - agents that use same session across all Discord channels
+const SHARED_DISCORD_SESSIONS: Record<string, string> = {
+  "maestro": "shared",
+  "main": "shared"
+};
+
+function getSharedDiscordPeerId(agentId: string, peerId: string): string {
+  const normalizedAgentId = agentId.toLowerCase().trim();
+  const sharedSuffix = SHARED_DISCORD_SESSIONS[normalizedAgentId];
+  if (sharedSuffix && peerId !== "unknown") {
+    return sharedSuffix;
+  }
+  return peerId;
+}
+
 export function buildAgentMainSessionKey(params: {
   agentId: string;
   mainKey?: string | undefined;
@@ -169,7 +184,9 @@ export function buildAgentPeerSessionKey(params: {
   }
   const channel = (params.channel ?? "").trim().toLowerCase() || "unknown";
   const peerId = ((params.peerId ?? "").trim() || "unknown").toLowerCase();
-  return `agent:${normalizeAgentId(params.agentId)}:${channel}:${peerKind}:${peerId}`;
+  const normalizedAgentId = normalizeAgentId(params.agentId);
+  const finalPeerId = getSharedDiscordPeerId(normalizedAgentId, peerId);
+  return `agent:${normalizedAgentId}:${channel}:${peerKind}:${finalPeerId}`;
 }
 
 function resolveLinkedPeerId(params: {
