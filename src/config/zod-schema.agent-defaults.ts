@@ -1,5 +1,6 @@
 import { z } from "zod";
 import {
+  AgentSessionSchema,
   HeartbeatSchema,
   MemorySearchSchema,
   SandboxBrowserSchema,
@@ -90,6 +91,7 @@ export const AgentDefaultsSchema = z
       .object({
         mode: z.union([z.literal("default"), z.literal("safeguard")]).optional(),
         reserveTokensFloor: z.number().int().nonnegative().optional(),
+        maxHistoryShare: z.number().min(0.1).max(0.9).optional(),
         memoryFlush: z
           .object({
             enabled: z.boolean().optional(),
@@ -149,6 +151,7 @@ export const AgentDefaultsSchema = z
               .strict(),
           ])
           .optional(),
+        thinking: z.string().optional(),
       })
       .strict()
       .optional(),
@@ -166,6 +169,7 @@ export const AgentDefaultsSchema = z
       })
       .strict()
       .optional(),
+    session: AgentSessionSchema,
   })
   .strict()
   .optional();
