@@ -133,7 +133,6 @@ export function buildAgentPeerSessionKey(params: {
   identityLinks?: Record<string, string[]>;
   /** DM session scope. */
   dmScope?: "main" | "per-peer" | "per-channel-peer" | "per-account-channel-peer";
-  dmScope?: "main" | "per-peer" | "per-channel-peer" | "per-account-channel-peer";
   /** Channel session scope: "shared" collapses all guild channels to one session. */
   channelScope?: "per-channel" | "shared";
 }): string {
